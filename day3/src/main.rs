@@ -1,7 +1,8 @@
 use std::collections::HashSet;
 use std::io::{BufRead, BufReader};
 use std::fs::File;
-use itertools::chain;
+use std::ops::BitAnd;
+use itertools::{chain, Itertools};
 use anyhow::Result;
 
 fn main() -> Result<()> {
@@ -10,12 +11,15 @@ fn main() -> Result<()> {
   let x = BufReader::new(file)
     .lines()
     .map(|l| l.unwrap())
-    .filter_map(|line| {
-      let (left, right) = line.split_at(line.len() / 2);
-      let set: HashSet<char> = HashSet::from_iter(left.chars());
-      right.chars().skip_while(|ch| !set.contains(ch)).next()
+    .map(|l| HashSet::<char>::from_iter(l.chars()))
+    .tuples::<(_, _, _)>()
+    .filter_map(|(r1, r2, r3)| {
+      r1.bitand(&r2)
+        .bitand(&r3)
+        .into_iter()
+        .next()
+        .and_then(|ch| chain![[' '], 'a'..='z', 'A'..='Z'].position(|p| p == ch))
     })
-    .filter_map(|ch| chain![[' '], 'a'..='z', 'A'..='Z'].position(|p| p == ch))
     .sum::<usize>();
 
   println!("{x}");
