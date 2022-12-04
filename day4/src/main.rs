@@ -12,7 +12,7 @@ fn main() -> anyhow::Result<()> {
         .collect_tuple::<(_, _, _, _)>()
     })
     .filter(|&(a, b, c, d)| {
-      (a <= c && d <= b) || (c <= a && b <= d)
+      !(b < c || d < a) // opposite to "do not intersect"
     })
     .count();
 
