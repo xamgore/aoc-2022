@@ -1,5 +1,6 @@
-use std::{fs, iter};
-use anyhow::Context;
+extern crate core;
+
+use std::fs;
 use itertools::Itertools;
 use regex::Regex;
 
@@ -31,10 +32,18 @@ fn main() -> anyhow::Result<()> {
     )
     .enumerate()
     .for_each(|(idx, (amount, from, to))| {
-      for _i in 0..amount {
-        let x = stacks[from - 1].pop().unwrap();
-        stacks[to - 1].push(x);
-      }
+      // get stacks[from] and stacks[to]
+      let (min, max) = (from.min(to), from.max(to));
+      let (ls, rs) = stacks.split_at_mut(max - 1);
+      let (ls, rs) = (&mut ls[min - 1], &mut rs[0]);
+      let (from, to) = if from < to {
+        (ls, rs)
+      } else {
+        (rs, ls)
+      };
+
+      let tail = from.len() - amount..;
+      to.extend(from.drain(tail));
     });
 
   for _i in 0..m {
