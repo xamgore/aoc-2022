@@ -3,15 +3,16 @@ use std::fs;
 use itertools::Itertools;
 
 fn main() -> anyhow::Result<()> {
-  let c = fs::read_to_string("input")?
-    .chars()
-    .tuple_windows::<(_, _, _, _)>()
-    .position(|(a, b, c, d)| {
-      let mut s = HashSet::with_capacity(4);
-      s.insert(a) && s.insert(b) && s.insert(c) && s.insert(d)
+  let s = fs::read_to_string("input")?;
+
+  let c = (0..s.len())
+    .map(|idx| &s[idx..(idx + 14)])
+    .position(|sl| {
+      let mut set = HashSet::with_capacity(14);
+      sl.chars().fold(true, |acc, ch| (acc && set.insert(ch)))
     });
 
-  println!("{}", c.unwrap() + 4);
+  println!("{}", c.unwrap() + 14);
 
   Ok(())
 }
