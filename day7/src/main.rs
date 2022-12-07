@@ -27,18 +27,24 @@ fn main() -> Result<()> {
       }
     });
 
-  terminal.fs.compute_sizes(0);
+  let root = terminal.fs.compute_sizes(0);
 
-  let cumulative_size: usize = terminal
+  let total = 70_000_000;
+  let need = 30_000_000;
+
+  let unused = total - root;
+  let to_free = need - unused;
+
+  let candidate = terminal
     .fs
     .store
     .iter()
     .filter(|it| it.kind == FsEntityKind::Dir)
-    .map(|it| it.size)
-    .filter(|&size| size <= 100_000)
-    .sum();
+    .filter(|it| it.size >= to_free)
+    .min_by_key(|it| it.size)
+    .unwrap();
 
-  println!("{cumulative_size}");
+  println!("{}", candidate.size);
 
   Ok(())
 }
