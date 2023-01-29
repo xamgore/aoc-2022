@@ -10,7 +10,7 @@ fn main() -> Result<()> {
     .map(|row| {
       row
         .chars()
-        .map(|ch| ch.to_digit(10).unwrap() as i32)
+        .map(|ch| ch.to_digit(10).unwrap() as usize)
         .collect_vec()
     })
     .collect_vec();
@@ -28,23 +28,28 @@ fn main() -> Result<()> {
   }
 
   acc.sort_unstable();
-  acc.dedup();
 
-  println!("{:?}", acc.len());
+  let p = acc
+    .into_iter()
+    .group_by(|&(pos, _)| pos)
+    .into_iter()
+    .map(|(pos, it)| (it.map(|(_, d)| d).product::<usize>(), pos))
+    .max()
+    .unwrap();
+
+  println!("{:?}", p.0);
 
   Ok(())
 }
 
 fn visible(
-  map: impl Iterator<Item = (usize, usize, i32)>,
-) -> impl Iterator<Item = (usize, usize, i32)> {
-  let mut max = -1;
-  map.filter(move |&(i, j, h)| {
-    if h > max {
-      max = h;
-      true
-    } else {
-      false
-    }
+  map: impl Iterator<Item = (usize, usize, usize)>,
+) -> impl Iterator<Item = ((usize, usize), usize)> {
+  let mut ds = [0; 10];
+
+  map.enumerate().map(move |(idx, (i, j, h))| {
+    let d = idx - ds[h..].iter().max().unwrap();
+    ds[h] = idx;
+    ((i, j), d)
   })
 }
