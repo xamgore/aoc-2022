@@ -1,7 +1,9 @@
+use std::collections::BTreeSet;
+
+use itertools::repeat_n;
+
 use crate::cursor::Cursor;
 use crate::dir::Dir;
-use itertools::repeat_n;
-use std::collections::BTreeSet;
 
 mod cursor;
 mod dir;
@@ -23,7 +25,7 @@ fn main() -> anyhow::Result<()> {
 
   for dir in dirs {
     cursor.go(dir);
-    marks.insert(cursor.tail.clone());
+    marks.insert(cursor.tail());
   }
 
   println!("{:?}", marks.len());

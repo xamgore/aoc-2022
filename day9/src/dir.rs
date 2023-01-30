@@ -6,6 +6,7 @@ pub enum Dir {
   D,
   L,
   R,
+  X,
 }
 
 impl Dir {
@@ -15,6 +16,7 @@ impl Dir {
       Dir::D => Dir::U,
       Dir::L => Dir::R,
       Dir::R => Dir::L,
+      Dir::X => Dir::X,
     }
   }
 }
