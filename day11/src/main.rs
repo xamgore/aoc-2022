@@ -42,6 +42,7 @@ pub struct Simulator {
   pub monkeys: Vec<Monkey>,
   pub items: HashMap<usize, Vec<usize>>,
   pub inspections: Vec<usize>,
+  pub module: usize,
 }
 
 impl Simulator {
@@ -50,6 +51,7 @@ impl Simulator {
       monkeys,
       items,
       inspections,
+      module,
     } = self;
 
     for monkey in monkeys {
@@ -57,7 +59,7 @@ impl Simulator {
       inspections[monkey.id] += queue.len();
 
       for it in queue {
-        let it = monkey.op.compute(it) / 3;
+        let it = monkey.op.compute(it) % *module;
         let id = monkey.next_monkey(it);
         items.get_mut(&id).unwrap().push(it);
       }
@@ -100,6 +102,7 @@ fn main() -> Result<()> {
     .collect_vec();
 
   let mut s = Simulator {
+    module: notes.iter().map(|m| m.branch.0).product(),
     items: notes
       .iter()
       .map(|m| (m.id, m.items.clone()))
@@ -108,7 +111,7 @@ fn main() -> Result<()> {
     monkeys: notes,
   };
 
-  for _ in 0..20 {
+  for _ in 0..10_000 {
     s.round();
   }
 
