@@ -57,7 +57,7 @@ impl Runtime {
       waiting.push((op, state.cycle + op.duration()));
     }
 
-    Some((state.cycle, state.cycle * state.register))
+    Some((state.cycle, state.register))
   }
 }
 
