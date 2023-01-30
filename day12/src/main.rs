@@ -2,10 +2,12 @@ use std::collections::{BTreeSet, VecDeque};
 
 fn main() {
   let mut grid = Grid::new(include_str!("../input"));
-  let mut queue = VecDeque::from([(grid.start, 0)]);
+  let mut queue = VecDeque::from([(grid.end, 0)]);
 
   while let Some((pos, steps)) = queue.pop_front() {
-    if pos == grid.end {
+    let level = grid.level_of(pos);
+
+    if level == lvl('a') {
       println!("steps: {steps}");
       break;
     }
@@ -14,8 +16,6 @@ fn main() {
       continue;
     }
 
-    let level = grid.level_of(pos);
-
     queue.extend(
       grid
         .to2d(pos)
@@ -23,7 +23,7 @@ fn main() {
         .into_iter()
         .filter(|p| grid.in_bounds(p))
         .map(|p| grid.from2d(p))
-        .filter(|p| level + 1 >= grid.level_of(*p))
+        .filter(|p| grid.level_of(*p) + 1 >= level)
         .map(|p| (p, steps + 1)),
     );
   }
